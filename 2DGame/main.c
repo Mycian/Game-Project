@@ -1,12 +1,9 @@
 #include "main.h"
-//#include <math.h>
 
 int playerDir=0, playerX=0, playerY=0, moving = 0;
 int step=0, upMove = 0, downMove = 0, leftMove = 0, rightMove = 0;
+struct boundary bounds;
 
-//Colors
-static GLfloat  red[] = { 1.0, 0.0, 0.0 };   //rojo
-static GLfloat  purple[] = { 1.0, 0.0, 1.0 };
 
 //Main, initialize and go to the idle loop
 int main( int argc, char **argv )
@@ -14,34 +11,40 @@ int main( int argc, char **argv )
     initWindow( argc, argv ); //without &
 	init3D();
 	defineCallbacks();
+	defineBounds();
 	glutMainLoop( );
 }
 
-struct boundary bounds = {
-    12,
-    {0, 75, 145, 160, 151, 95, 0, -65, -142, -155, -145, -75},
-    {165, 160, 100, 0, -80, -130, -145, -125, -70, 0, 100, 150}
-};
+void defineBounds(){
+    bounds.points = 100;
+    for (int i = 0; i < bounds.points; i++){
+        bounds.coordX[i] = cos(((360/bounds.points)/57.29f)*i) * 160;
+        bounds.coordY[i] = sin(((360/bounds.points)/57.29f)*i) * 155 + 5;
+    }
+}
 
 
 void game()
 {
     loadTexture();
 	glLoadIdentity();
+	glScalef(.5f,.5f,1.0f);
 	movePlayer();
 	glTranslated(-playerX, -playerY, 0.0);
 	background();
     glColor3f( 1.0, 1.0, 1.0 );
 
 	glLoadIdentity();
+	glScalef(.5f,.5f,1.0f);
 	player();
 
 	//Text data
 	char message[120];
-	sprintf( message, "X: %d Y: %d Step: %d", playerX, playerY, step);
+	sprintf( message, "X: %d Y: %d Moving: %d Collision:", playerX, playerY, moving, 0);
 	glutPrintBM( -90.0, 90.0, GLUT_BITMAP_TIMES_ROMAN_24, message, 1.0, 1.0, 1.0 );
 
-	//drawBounds();
+	drawBounds();
+	glColor3f(1.0,1.0,1.0);
 }
 //Action keys for this application, called the from keyboard() callback.
 void gameKeys( unsigned char key )
@@ -113,20 +116,20 @@ void movePlayer(){
         //finds the coordinates
         int X1 = playerX, Y1 = playerY;
         if(playerDir == 0 && moving)
-            Y1 += 5;
+            Y1 += 10;
         if(playerDir == 1 && moving)
-            Y1 -= 5;
+            Y1 -= 10;
         if(playerDir == 2 && moving)
-            X1 -= 5;
+            X1 -= 10;
         if(playerDir == 3 && moving)
-            X1 += 5;
+            X1 += 10;
 
         //checks for collision and moves if able
-        int hit = collision(X1, Y1, bounds, 0);
+        int hit = collision(X1, Y1, bounds, 1);
         if(!hit || (hit && !(X1%10) && !(Y1%10)))
         {
-            playerX = X1;
-            playerY = Y1;
+            playerX += (X1 - playerX)/2;
+            playerY += (Y1 - playerY)/2;
         }
 
         //cycles through steps
@@ -143,7 +146,7 @@ void movePlayer(){
 }
 
 //collision detection with walls, returns 1 if player cant move
-//takes a structure containing the coordinates of an object and the orientation of the collision: 0 for inside and 1 for outside
+//takes a structure containing the coordinates of an object and the orientation of the boundary
 
 int collision(int x, int y, struct boundary bounds, int orientation){
     if(orientation){
@@ -162,12 +165,6 @@ int collision(int x, int y, struct boundary bounds, int orientation){
     if(((y - bounds.coordY[bounds.points - 1])*(bounds.coordX[0] - bounds.coordX[bounds.points - 1]) - (x - bounds.coordX[bounds.points - 1])*(bounds.coordY[0] - bounds.coordY[bounds.points - 1])) > -1)
         return 1;
     return 0;
-
-
-    /*if ((playerDir == 3 && x > 160) || (playerDir == 2 && x < -160) || (playerDir == 0 && y > 160) || (playerDir == 1 && y < -160)){
-        return 1;
-    }
-    return 0;*/
 }
 
 //Called from keyboard() callback

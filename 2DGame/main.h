@@ -24,8 +24,8 @@ extern int moving;
 extern int step;
 struct boundary{
     int points;
-    int coordX[12];
-    int coordY[12];
+    int coordX[100];
+    int coordY[100];
 };
 extern struct boundary bounds;
 
