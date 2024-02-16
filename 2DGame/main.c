@@ -16,7 +16,7 @@ int main( int argc, char **argv )
 }
 
 void defineBounds(){
-    bounds.points = 100;
+    bounds.points = 36;
     for (int i = 0; i < bounds.points; i++){
         bounds.coordX[i] = cos(((360/bounds.points)/57.29f)*i) * 160;
         bounds.coordY[i] = sin(((360/bounds.points)/57.29f)*i) * 155 + 5;
@@ -28,14 +28,12 @@ void game()
 {
     loadTexture();
 	glLoadIdentity();
-	glScalef(.5f,.5f,1.0f);
 	movePlayer();
 	glTranslated(-playerX, -playerY, 0.0);
 	background();
     glColor3f( 1.0, 1.0, 1.0 );
 
 	glLoadIdentity();
-	glScalef(.5f,.5f,1.0f);
 	player();
 
 	//Text data
