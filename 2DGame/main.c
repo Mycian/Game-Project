@@ -41,7 +41,7 @@ void game()
 	sprintf( message, "X: %d Y: %d Step: %d", playerX, playerY, step);
 	glutPrintBM( -90.0, 90.0, GLUT_BITMAP_TIMES_ROMAN_24, message, 1.0, 1.0, 1.0 );
 
-	drawBounds();
+	//drawBounds();
 }
 //Action keys for this application, called the from keyboard() callback.
 void gameKeys( unsigned char key )
