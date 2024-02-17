@@ -2,13 +2,13 @@
 
 GLuint playerTex;
 GLuint backTex;
-int offset = 0, inverse = 1;
+int offsetX = 0, offsetY = 0;
 
 void loadTexture(){
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // Load texture
     playerTex = SOIL_load_OGL_texture(
-        "sprites/PMMovement.png",
+        "sprites/playerSheet.png",
         SOIL_LOAD_AUTO,//SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_INVERT_Y
@@ -34,10 +34,10 @@ void player()
     // Draw rectangle with texture
     animation();
     glBegin(GL_QUADS);
-    glTexCoord2f((0.166 * offset), 0.0f); glVertex2d(-4.5, -5);
-    glTexCoord2f((0.166 * offset) + (inverse * 0.166f), 0.0f); glVertex2d(4.5, -5);
-    glTexCoord2f((0.166 * offset) + (inverse * 0.166f), 1.0f); glVertex2d(4.5, 5);
-    glTexCoord2f((0.166 * offset), 1.0f); glVertex2d(-4.5, 5);
+    glTexCoord2f((0.25 * offsetX), (0.25 * offsetY)); glVertex2d(-5, -5);
+    glTexCoord2f((0.25 * (offsetX+1)), (0.25 * offsetY)); glVertex2d(5, -5);
+    glTexCoord2f((0.25 * (offsetX+1)), (0.25 * (offsetY+1))); glVertex2d(5, 5);
+    glTexCoord2f((0.25 * offsetX), (0.25 * (offsetY+1))); glVertex2d(-5, 5);
     glEnd();
     glDisable(GL_TEXTURE_2D);
 }
@@ -71,57 +71,63 @@ void animation(){
     case 0:
         switch(step){
         case 0: case 2:
-            offset = 1;
-            inverse = 1;
+            offsetX = 0;
+            offsetY = 2;
             break;
         case 1:
-            offset = 4;
-            inverse = 1;
+            offsetX = 1;
+            offsetY = 2;
             break;
         case 3:
-            offset = 5;
-            inverse = -1;
+            offsetX = 3;
+            offsetY = 2;
             break;
         }
         break;
     case 1:
         switch(step){
         case 0: case 2:
-            offset = 0;
-            inverse = 1;
+            offsetX = 0;
+            offsetY = 3;
             break;
         case 1:
-            offset = 3;
-            inverse = 1;
+            offsetX = 1;
+            offsetY = 3;
             break;
         case 3:
-            offset = 4;
-            inverse = -1;
+            offsetX = 3;
+            offsetY = 3;
             break;
         }
         break;
     case 2:
         switch(step){
         case 0: case 2:
-            offset = 2;
-            inverse = 1;
+            offsetX = 0;
+            offsetY = 1;
             break;
-        case 1: case 3:
-            offset = 5;
-            inverse = 1;
+        case 1:
+            offsetX = 1;
+            offsetY = 1;
             break;
+        case 3:
+            offsetX = 3;
+            offsetY = 1;
         }
         break;
     case 3:
         switch(step){
         case 0: case 2:
-            offset = 3;
-            inverse = -1;
+            offsetX = 0;
+            offsetY = 0;
             break;
-        case 1: case 3:
-            offset = 6;
-            inverse = -1;
+        case 1:
+            offsetX = 1;
+            offsetY = 0;
             break;
+        case 3:
+            offsetX = 3;
+            offsetY = 0;
         }
         break;
     }
