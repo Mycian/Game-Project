@@ -1,6 +1,6 @@
 #include "main.h"
 
-int playerDir=0, playerX=0, playerY=0, moving = 0;
+int playerDir=0, playerX=0, playerY=0, moving = 0, attacking = 0;
 int step=0, upMove = 0, downMove = 0, leftMove = 0, rightMove = 0;
 struct boundary bounds;
 
@@ -28,7 +28,10 @@ void game()
 {
     loadTexture();
 	glLoadIdentity();
-	movePlayer();
+	if(attacking && !(step%2))
+        attack();
+	else
+        movePlayer();
 	glTranslated(-playerX, -playerY, 0.0);
 	background();
     glColor3f( 1.0, 1.0, 1.0 );
@@ -164,6 +167,12 @@ int collision(int x, int y, struct boundary bounds, int orientation){
         return 1;
     return 0;
 }
+
+//Called from gameKeys()
+void attack(){
+
+}
+
 
 //Called from keyboard() callback
 void resetGame()

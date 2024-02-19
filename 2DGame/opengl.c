@@ -133,6 +133,12 @@ void mouse( int button, int state, int x, int y )
 	}
 	if( state==GLUT_UP )
 		mouse_left=mouse_right=0;
+
+    if(mouse_left){
+        attacking = 1;
+    } else {
+        attacking = 0;
+    }
 }
 void movement( int x, int y )
 {

@@ -8,6 +8,7 @@ extern void gameKeys( unsigned char key );
 extern void gameKeysUp( unsigned char key);
 extern void resetGame();
 extern void movePlayer();
+extern void attack();
 
 
 //Models
@@ -22,6 +23,7 @@ extern int playerX;
 extern int playerY;
 extern int moving;
 extern int step;
+extern int attacking;
 struct boundary{
     int points;
     int coordX[100];

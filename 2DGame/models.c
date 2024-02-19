@@ -1,4 +1,6 @@
 #include "main.h"
+#define SPRITEX 0.214
+#define SPRITEY 0.25
 
 GLuint playerTex;
 GLuint backTex;
@@ -34,10 +36,10 @@ void player()
     // Draw rectangle with texture
     animation();
     glBegin(GL_QUADS);
-    glTexCoord2f((0.25 * offsetX), (0.25 * offsetY)); glVertex2d(-5, -5);
-    glTexCoord2f((0.25 * (offsetX+1)), (0.25 * offsetY)); glVertex2d(5, -5);
-    glTexCoord2f((0.25 * (offsetX+1)), (0.25 * (offsetY+1))); glVertex2d(5, 5);
-    glTexCoord2f((0.25 * offsetX), (0.25 * (offsetY+1))); glVertex2d(-5, 5);
+    glTexCoord2f((SPRITEX * offsetX), (SPRITEY * offsetY)); glVertex2d(-10, -10);
+    glTexCoord2f((SPRITEX * (offsetX+1)), (SPRITEY * offsetY)); glVertex2d(10, -10);
+    glTexCoord2f((SPRITEX * (offsetX+1)), (SPRITEY * (offsetY+1))); glVertex2d(10, 10);
+    glTexCoord2f((SPRITEX * offsetX), (SPRITEY * (offsetY+1))); glVertex2d(-10, 10);
     glEnd();
     glDisable(GL_TEXTURE_2D);
 }
@@ -67,69 +69,136 @@ void drawBounds(){
 }
 
 void animation(){
-    switch(playerDir){
-    case 0:
-        switch(step){
-        case 0: case 2:
-            offsetX = 0;
-            offsetY = 2;
+    if(attacking){
+        switch(playerDir){
+        case 0:
+            switch(attacking){
+            case 0: case 2:
+                offsetX = 0;
+                offsetY = 2;
+                break;
+            case 1:
+                offsetX = 1;
+                offsetY = 2;
+                break;
+            case 3:
+                offsetX = 2;
+                offsetY = 2;
+                break;
+            }
             break;
         case 1:
-            offsetX = 1;
-            offsetY = 2;
+            switch(step){
+            case 0: case 2:
+                offsetX = 0;
+                offsetY = 3;
+                break;
+            case 1:
+                offsetX = 1;
+                offsetY = 3;
+                break;
+            case 3:
+                offsetX = 2;
+                offsetY = 3;
+                break;
+            }
+            break;
+        case 2:
+            switch(step){
+            case 0: case 2:
+                offsetX = 0;
+                offsetY = 1;
+                break;
+            case 1:
+                offsetX = 1;
+                offsetY = 1;
+                break;
+            case 3:
+                offsetX = 2;
+                offsetY = 1;
+            }
             break;
         case 3:
-            offsetX = 3;
-            offsetY = 2;
+            switch(step){
+            case 0: case 2:
+                offsetX = 0;
+                offsetY = 0;
+                break;
+            case 1:
+                offsetX = 1;
+                offsetY = 0;
+                break;
+            case 3:
+                offsetX = 2;
+                offsetY = 0;
+            }
             break;
         }
-        break;
-    case 1:
-        switch(step){
-        case 0: case 2:
-            offsetX = 0;
-            offsetY = 3;
+    } else {
+        switch(playerDir){
+        case 0:
+            switch(step){
+            case 0: case 2:
+                offsetX = 0;
+                offsetY = 2;
+                break;
+            case 1:
+                offsetX = 1;
+                offsetY = 2;
+                break;
+            case 3:
+                offsetX = 2;
+                offsetY = 2;
+                break;
+            }
             break;
         case 1:
-            offsetX = 1;
-            offsetY = 3;
+            switch(step){
+            case 0: case 2:
+                offsetX = 0;
+                offsetY = 3;
+                break;
+            case 1:
+                offsetX = 1;
+                offsetY = 3;
+                break;
+            case 3:
+                offsetX = 2;
+                offsetY = 3;
+                break;
+            }
+            break;
+        case 2:
+            switch(step){
+            case 0: case 2:
+                offsetX = 0;
+                offsetY = 1;
+                break;
+            case 1:
+                offsetX = 1;
+                offsetY = 1;
+                break;
+            case 3:
+                offsetX = 2;
+                offsetY = 1;
+            }
             break;
         case 3:
-            offsetX = 3;
-            offsetY = 3;
+            switch(step){
+            case 0: case 2:
+                offsetX = 0;
+                offsetY = 0;
+                break;
+            case 1:
+                offsetX = 1;
+                offsetY = 0;
+                break;
+            case 3:
+                offsetX = 2;
+                offsetY = 0;
+            }
             break;
         }
-        break;
-    case 2:
-        switch(step){
-        case 0: case 2:
-            offsetX = 0;
-            offsetY = 1;
-            break;
-        case 1:
-            offsetX = 1;
-            offsetY = 1;
-            break;
-        case 3:
-            offsetX = 3;
-            offsetY = 1;
-        }
-        break;
-    case 3:
-        switch(step){
-        case 0: case 2:
-            offsetX = 0;
-            offsetY = 0;
-            break;
-        case 1:
-            offsetX = 1;
-            offsetY = 0;
-            break;
-        case 3:
-            offsetX = 3;
-            offsetY = 0;
-        }
-        break;
     }
 }
 
