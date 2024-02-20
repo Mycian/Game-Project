@@ -1,4 +1,5 @@
 #include "main.h"
+
 //Variables for initializing process
 int advance=0, anim=1, alias=1;
 int orthox1=-100, orthoy1=-100, orthox2=100, orthoy2=100;
@@ -94,25 +95,10 @@ void keyboard( unsigned char key, int x, int y )
 		else
 			glutIdleFunc( 0 );
 		break;
-// moved
 	case 'R':
 		resetGame();
 		draw();
 		break;
-	/*case 'A':
-		alias = !alias;
-		if( alias )
-		{
-			glEnable( GL_LINE_SMOOTH );
-			glEnable( GL_POLYGON_SMOOTH );
-			glEnable( GL_BLEND);
-		} else {
-			glDisable( GL_LINE_SMOOTH );
-			glDisable( GL_POLYGON_SMOOTH );
-			glDisable( GL_BLEND);
-		}
-		draw();
-		break;  */
 	default:
 		gameKeys( toupper( key ) );
 	}
@@ -135,11 +121,10 @@ void mouse( int button, int state, int x, int y )
 		mouse_left=mouse_right=0;
 
     if(mouse_left){
-        attacking = 1;
-    } else {
-        attacking = 0;
+        attack();
     }
 }
+
 void movement( int x, int y )
 {
 	if( mouse_right ){}
@@ -147,24 +132,4 @@ void movement( int x, int y )
 	mn_x0=x;
 	mn_y0=y;
 }
-//========================
-//Render text using bitmap
-void glutPrintBM(float x, float y, LPLC_ID font, char* text, GLfloat red, GLfloat green, GLfloat blue )
-{
-    if( !text || !strlen( text ) ) return;
-    glColor3f( red, green, blue );
-    glRasterPos2f( x,y );
-    glutBitmapString( font, text );
-}
-//Render text using vectors
-void glutPrintSt(float x, float y, LPLC_ID font, char* text, GLfloat red, GLfloat green, GLfloat blue )
-{
-    if( !text || !strlen( text ) ) return;
-    glColor3f( red, green, blue );
-    glLineWidth( 2.0 );
-    glRasterPos2f( x,y );
-    glPushMatrix();
-    glScalef( 0.04, 0.04, 1.0 );
-    glutStrokeString( font, text );
-    glPopMatrix();
-}
+
