@@ -1,7 +1,10 @@
 #include "Player.h"
 #include "main.h"
+#include <iostream>
 #define SPRITEX 0.1655
-#define SPRITEY 0.25
+#define SPRITEY 0.2
+#define PLAYERWIDTH 28
+#define PLAYERHEIGHT 18
 
 Player::Player()
 {
@@ -11,7 +14,19 @@ Player::Player()
     attacking = 0;
     direction = 1;
     step = 0;
+    swing = 0;
 }
+
+Player::Player(bool player){
+    x = (rand() % (41)) + 270;
+    y = (rand() % (340)) - 170;
+    moving = 0;
+    attacking = 0;
+    direction = 1;
+    step = 0;
+    swing = 0;
+}
+
 
 Player::~Player()
 {
@@ -33,21 +48,17 @@ void Player::movePlayer(){
         //finds the coordinates
         int X1 = x, Y1 = y;
         if(direction == 0 && moving)
-            Y1 += 10;
+            Y1 += 20;
         if(direction == 1 && moving)
-            Y1 -= 10;
+            Y1 -= 20;
         if(direction == 2 && moving)
-            X1 -= 10;
+            X1 -= 20;
         if(direction == 3 && moving)
-            X1 += 10;
+            X1 += 20;
 
-        //checks for collision and moves if able
-        /*int hit = collision(X1, Y1, bounds, 1);
-        if(!hit || (hit && !(X1%10) && !(Y1%10)))
-        {*/
-            x += (X1 - x)/2;
-            y += (Y1 - y)/2;
-        //}
+        x += (X1 - x)/2;
+        y += (Y1 - y)/2;
+
 
         //cycles through steps
         if(step == 3)
@@ -58,11 +69,45 @@ void Player::movePlayer(){
         //stops player
         if(!upMove && !downMove && !leftMove && !rightMove && !(step%2))
             moving = 0;
-
+        std::cout << x << "," << y << std::endl;
     }
 }
 
 void Player::attack(){
+    /*switch(direction){
+    case 0:
+        glBegin(GL_LINE_LOOP);
+         glVertex2d(-6, -PLAYERHEIGHT/2);
+         glVertex2d(-6, 5-PLAYERHEIGHT/2);
+         glVertex2d(9, 5-PLAYERHEIGHT/2);
+         glVertex2d(9, -PLAYERHEIGHT/2);
+        glEnd();
+        break;
+    case 1:
+        glBegin(GL_LINE_LOOP);
+         glVertex2d(-6, 0);
+         glVertex2d(-6, 5);
+         glVertex2d(9, 5);
+         glVertex2d(9, 0);
+        glEnd();
+        break;
+    case 2:
+        glBegin(GL_LINE_LOOP);
+         glVertex2d(2, PLAYERHEIGHT/2);
+         glVertex2d(2, 5+PLAYERHEIGHT/2);
+         glVertex2d(8, 5+PLAYERHEIGHT/2);
+         glVertex2d(8, PLAYERHEIGHT/2);
+        glEnd();
+        break;
+    case 3:
+        glBegin(GL_LINE_LOOP);
+         glVertex2d(2-PLAYERWIDTH/2, PLAYERHEIGHT/2);
+         glVertex2d(2-PLAYERWIDTH/2, 5+PLAYERHEIGHT/2);
+         glVertex2d(2+PLAYERWIDTH/2, 5+PLAYERHEIGHT/2);
+         glVertex2d(2+PLAYERWIDTH/2, PLAYERHEIGHT/2);
+        glEnd();
+        break;
+    }*/
 
 }
 
@@ -74,42 +119,49 @@ void Player::draw(GLuint* texture){
     // Draw rectangle with texture
     animation();
     glBegin(GL_QUADS);
-    glTexCoord2f((SPRITEX * offsetX), (SPRITEY * offsetY)); glVertex2d(-15, -10);
-    glTexCoord2f((SPRITEX * (offsetX+1)), (SPRITEY * offsetY)); glVertex2d(15, -10);
-    glTexCoord2f((SPRITEX * (offsetX+1)), (SPRITEY * (offsetY+1))); glVertex2d(15, 10);
-    glTexCoord2f((SPRITEX * offsetX), (SPRITEY * (offsetY+1))); glVertex2d(-15, 10);
+    glTexCoord2f((SPRITEX * offsetX), (SPRITEY * offsetY)); glVertex2d(-PLAYERWIDTH/2, -PLAYERHEIGHT/2);
+    glTexCoord2f((SPRITEX * (offsetX+1)), (SPRITEY * offsetY)); glVertex2d(PLAYERWIDTH/2, -PLAYERHEIGHT/2);
+    glTexCoord2f((SPRITEX * (offsetX+1)), (SPRITEY * (offsetY+1))); glVertex2d(PLAYERWIDTH/2, PLAYERHEIGHT/2);
+    glTexCoord2f((SPRITEX * offsetX), (SPRITEY * (offsetY+1))); glVertex2d(-PLAYERWIDTH/2, PLAYERHEIGHT/2);
     glEnd();
     glDisable(GL_TEXTURE_2D);
+    if(character.attacking)
+        std::cout << std::endl << character.swing << " " << character.attacking << "; " ;
 }
 
 void Player::animation(){
     if(attacking){
-        switch(attacking){
-        case 1:
+        switch(swing){
+        case 0:
             offsetX = 3;
-            attacking++;
+            ++swing;
+            break;
+        case 1:
+            offsetX = 4;
+            ++swing;
             break;
         case 2:
-            offsetX = 4;
-            attacking++;
+            offsetX = 5;
+            ++swing;
             break;
         case 3:
-            offsetX = 5;
-            attacking = 0;
+            offsetX = 0;
+            swing = 0;
+            attacking = false;
             break;
         }
         switch(direction){
         case 0:
-            offsetY = 2;
-            break;
-        case 1:
             offsetY = 3;
             break;
+        case 1:
+            offsetY = 4;
+            break;
         case 2:
-            offsetY = 1;
+            offsetY = 2;
             break;
         case 3:
-            offsetY = 0;
+            offsetY = 1;
         }
     } else {
         switch(step){
@@ -125,16 +177,16 @@ void Player::animation(){
         }
         switch(direction){
         case 0:
-            offsetY = 2;
-            break;
-        case 1:
             offsetY = 3;
             break;
+        case 1:
+            offsetY = 4;
+            break;
         case 2:
-            offsetY = 1;
+            offsetY = 2;
             break;
         case 3:
-            offsetY = 0;
+            offsetY = 1;
             break;
         }
     }

@@ -1,5 +1,6 @@
 #include "main.h"
 
+
 //Variables for initializing process
 int advance=0, anim=1, alias=1;
 int orthox1=-100, orthoy1=-100, orthox2=100, orthoy2=100;
@@ -52,7 +53,7 @@ void loop( void )
 {
 	advance++;
 	draw();
-	Sleep( 50 );//miliseconds
+	Sleep( 100 );//miliseconds
 }
 
 void draw()
@@ -61,7 +62,7 @@ void draw()
     game();
     glutSwapBuffers();
 }
-//Callback, when a reshape happened
+//Callback, when a reshape happenedw
 void reshape(int width, int height )
 {
 	glViewport(0, 0, width, height );
@@ -110,6 +111,13 @@ void keyboardUp( unsigned char key, int x, int y ){
 
 void mouse( int button, int state, int x, int y )
 {
+    if (button == 3){
+        zoom(true);
+        return;
+    } else if (button == 4){
+        zoom(false);
+        return;
+    }
 	if( state==GLUT_DOWN )
 	{
 		mn_x0=x;
@@ -133,3 +141,10 @@ void movement( int x, int y )
 	mn_y0=y;
 }
 
+void glutPrintBM(float x, float y, LPLC_ID font, char* text, GLfloat red, GLfloat green, GLfloat blue )
+{
+    if( !text || !strlen( text ) ) return;
+    glColor3f( red, green, blue );
+    glRasterPos2f( x,y );
+    //glutBitmapString( font, text );
+}

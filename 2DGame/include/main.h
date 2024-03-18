@@ -10,11 +10,14 @@ extern void game(); //To draw general scenery of the game
 extern void gameKeys( unsigned char key );
 extern void gameKeysUp( unsigned char key);
 extern void attack();
+extern void zoom(bool in);
 extern void resetGame();
 //models and actors
 extern GLuint playerTex;
 extern GLuint backTex;
+extern GLuint enemyTex;
 extern Player character;
+extern float scale;
 
 
 //OpenGL globals and functions
@@ -23,3 +26,4 @@ extern int orthox1, orthoy1, orthox2, orthoy2;
 extern void initWindow( int argc, char **argv );
 extern void init3D();
 extern void defineCallbacks();
+void glutPrintBM(float x, float y, LPLC_ID font, char* text, GLfloat red, GLfloat green, GLfloat blue );

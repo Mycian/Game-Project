@@ -8,14 +8,17 @@ class Player
 {
     public:
         Player();
+        Player(bool player);
         virtual ~Player();
-        int x, y, attacking, moving;
+        int x, y;
+        bool attacking, moving;
         int upMove, downMove, leftMove, rightMove;
         void movePlayer();
         void attack();
         void draw(GLuint* texture);
-        int step;
+        int step, swing;
         int direction;
+        bool controller;
     protected:
 
     private:
