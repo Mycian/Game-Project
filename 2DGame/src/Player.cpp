@@ -18,8 +18,10 @@ Player::Player()
 }
 
 Player::Player(bool player){
-    x = (rand() % (41)) + 270;
-    y = (rand() % (340)) - 170;
+    int x1 = ((rand() % 41) + 270);
+    int y1 = ((rand() % 340) - 170);
+    x = x1 - (x1 % 20);
+    y = y1 - (y1 % 20);
     moving = 0;
     attacking = 0;
     direction = 1;
@@ -35,26 +37,33 @@ Player::~Player()
 
 void Player::movePlayer(){
     //rotate player to the direction they are moving
-    if (upMove && step%2 == 0)
+    if (upMove && step%2 == 0 && direction != 0){
         direction = 0;
-    if (downMove && step%2 == 0)
+        return;
+    }
+    if (downMove && step%2 == 0 && direction != 1){
         direction = 1;
-    if (leftMove && step%2 == 0)
+        return;
+    }
+    if (leftMove && step%2 == 0 && direction != 2){
         direction = 2;
-    if (rightMove && step%2 == 0)
+        return;
+    }
+    if (rightMove && step%2 == 0 && direction != 3){
         direction = 3;
-
+        return;
+    }
     if (moving){
         //finds the coordinates
         int X1 = x, Y1 = y;
         if(direction == 0 && moving)
-            Y1 += 20;
+            Y1 += 10;
         if(direction == 1 && moving)
-            Y1 -= 20;
+            Y1 -= 10;
         if(direction == 2 && moving)
-            X1 -= 20;
+            X1 -= 10;
         if(direction == 3 && moving)
-            X1 += 20;
+            X1 += 10;
 
         x += (X1 - x)/2;
         y += (Y1 - y)/2;
@@ -72,6 +81,8 @@ void Player::movePlayer(){
         std::cout << x << "," << y << std::endl;
     }
 }
+
+
 
 void Player::attack(){
     /*switch(direction){
@@ -115,7 +126,7 @@ void Player::draw(GLuint* texture){
     // Bind texture
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
-    glBindTexture( GL_TEXTURE_2D, playerTex );
+    glBindTexture( GL_TEXTURE_2D, *texture );
     // Draw rectangle with texture
     animation();
     glBegin(GL_QUADS);
