@@ -11,7 +11,7 @@ GLuint firstBackTex;
 GLuint secondBackTex;
 GLuint enemyTex;
 float scale = 1;
-vector<Player> enemies;
+vector<Player> actors;
 int movementTick = 0;
 //function prototypes
 void defineBounds();
@@ -59,38 +59,52 @@ void defineBounds(){
 void game()
 {
 	glLoadIdentity();
+
 	if(!character.attacking )
         character.movePlayer();
-    sort(enemies.begin(), enemies.end(), compareZ);
+    sort(actors.begin(), actors.end(), compareZ);
+
+
     enemyActions();
+
     // Draw background
+    {
     glScalef(scale, scale, scale);
 	glTranslated(-character.x, -character.y, 0.0);
 	glPushMatrix();
-
 	glEnable(GL_TEXTURE_2D);
     glBindTexture( GL_TEXTURE_2D, firstBackTex );
     glBegin(GL_QUADS);
-    glTexCoord2f(1.0f, 0.0f); glVertex2d(-320, -180);
-    glTexCoord2f(0.0f, 0.0f); glVertex2d(320, -180);
-    glTexCoord2f(0.0f, 1.0f); glVertex2d(320, 180);
-    glTexCoord2f(1.0f, 1.0f); glVertex2d(-320, 180 );
+    glTexCoord2f(1.0f, 0.0f); glVertex2d(320, -180);
+    glTexCoord2f(0.0f, 0.0f); glVertex2d(-320, -180);
+    glTexCoord2f(0.0f, 1.0f); glVertex2d(-320, 180);
+    glTexCoord2f(1.0f, 1.0f); glVertex2d(320, 180 );
     glEnd();
     //grid();
     glColor3f( 1.0, 1.0, 1.0 );
+    }
 
+
+    // Draw enemies
+    {
     glPopMatrix();
-    for(int i = 0; i < enemies.size(); i++){
+    for(int i = 0; i < actors.size(); i++){
         glPushMatrix();
-        glTranslated(enemies[i].x, enemies[i].y, 0.0);
-        enemies[i].draw(&enemyTex);
+        glTranslated(actors[i].x, actors[i].y, 0.0);
+        actors[i].draw(&enemyTex);
         glPopMatrix();
     }
-	glLoadIdentity();
+    }
+
+	// Draw Player
+	{
+    glLoadIdentity();
 	glScalef(scale, scale, scale);
     character.draw(&playerTex);
     if(character.attacking )
         character.attack();
+	}
+
 	glColor3f(1.0,1.0,1.0);
 }
 
@@ -99,7 +113,7 @@ void loadTexture(){
     // Load texture
     playerTex = SOIL_load_OGL_texture(
         "sprites/playerSheet.png",
-        SOIL_LOAD_AUTO,//SOIL_LOAD_AUTO,
+        SOIL_LOAD_RGBA,//SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_INVERT_Y
     );
@@ -133,6 +147,8 @@ void loadTexture(){
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_INVERT_Y
     );
+    actors.push_back(Player(false));
+    character = actors[0];
 }
 
 bool compareZ(Player p1, Player p2){
@@ -199,58 +215,59 @@ void attack(){
 }
 
 void enemyActions(){
-    if(enemies.size() < 4)
-        enemies.push_back(Player(true));
-    for(int i = 0; i < enemies.size(); i++){
-        if(enemies[i].x < character.x){
-            if(enemies[i].y - character.y > -(enemies[i].x - character.x)){
-                enemies[i].upMove = 0;
-                enemies[i].downMove = 1;
-                enemies[i].leftMove = 0;
-                enemies[i].rightMove = 0;
-            } else if (-(enemies[i].y - character.y) > -(enemies[i].x - character.x)){
-                enemies[i].upMove = 1;
-                enemies[i].downMove = 0;
-                enemies[i].leftMove = 0;
-                enemies[i].rightMove = 0;
+    if(actors.size() < 4)
+        actors.push_back(Player(true));
+    for(int i = 0; i < actors.size(); i++){
+        if(!actors[i].controller)
+            if(actors[i].x < character.x){
+                if(actors[i].y - character.y > -(actors[i].x - character.x)){
+                    actors[i].upMove = 0;
+                    actors[i].downMove = 1;
+                    actors[i].leftMove = 0;
+                    actors[i].rightMove = 0;
+                } else if (-(actors[i].y - character.y) > -(actors[i].x - character.x)){
+                    actors[i].upMove = 1;
+                    actors[i].downMove = 0;
+                    actors[i].leftMove = 0;
+                    actors[i].rightMove = 0;
+                } else {
+                    actors[i].upMove = 0;
+                    actors[i].downMove = 0;
+                    actors[i].leftMove = 0;
+                    actors[i].rightMove = 1;
+                }
             } else {
-                enemies[i].upMove = 0;
-                enemies[i].downMove = 0;
-                enemies[i].leftMove = 0;
-                enemies[i].rightMove = 1;
+                if(actors[i].y - character.y > actors[i].x - character.x){
+                    actors[i].upMove = 0;
+                    actors[i].downMove = 1;
+                    actors[i].leftMove = 0;
+                    actors[i].rightMove = 0;
+                } else if (-(actors[i].y - character.y) > actors[i].x - character.x){
+                    actors[i].upMove = 1;
+                    actors[i].downMove = 0;
+                    actors[i].leftMove = 0;
+                    actors[i].rightMove = 0;
+                } else {
+                    actors[i].upMove = 0;
+                    actors[i].downMove = 0;
+                    actors[i].leftMove = 1;
+                    actors[i].rightMove = 0;
+                }
             }
-        } else {
-            if(enemies[i].y - character.y > enemies[i].x - character.x){
-                enemies[i].upMove = 0;
-                enemies[i].downMove = 1;
-                enemies[i].leftMove = 0;
-                enemies[i].rightMove = 0;
-            } else if (-(enemies[i].y - character.y) > enemies[i].x - character.x){
-                enemies[i].upMove = 1;
-                enemies[i].downMove = 0;
-                enemies[i].leftMove = 0;
-                enemies[i].rightMove = 0;
+            if(actors[i].y - character.x == 20 || actors[i].x - character.x == 20){
+                actors[i].attacking = true;
+                actors[i].moving = false;
             } else {
-                enemies[i].upMove = 0;
-                enemies[i].downMove = 0;
-                enemies[i].leftMove = 1;
-                enemies[i].rightMove = 0;
+                actors[i].attacking = false;
+                actors[i].moving = true;
             }
+            if(movementTick == 0){
+                actors[i].movePlayer();
+                //*std::cout << "Enemy " << i << ": " << actors[i].x << ", " << actors[i].y << std::endl;
+            }
+            movementTick++;
+            movementTick = movementTick % 5;
         }
-        if(enemies[i].y - character.x == 20 || enemies[i].x - character.x == 20){
-            enemies[i].attacking = true;
-            enemies[i].moving = false;
-        } else {
-            enemies[i].attacking = false;
-            enemies[i].moving = true;
-        }
-        if(movementTick == 0){
-            enemies[i].movePlayer();
-            std::cout << "Enemy " << i << ": " << enemies[i].x << ", " << enemies[i].y << std::endl;
-        }
-        movementTick++;
-        movementTick = movementTick % 5;
-    }
 
 }
 

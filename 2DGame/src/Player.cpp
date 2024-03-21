@@ -3,8 +3,8 @@
 #include <iostream>
 #define SPRITEX 0.1655
 #define SPRITEY 0.2
-#define PLAYERWIDTH 28
-#define PLAYERHEIGHT 18
+#define PLAYERWIDTH 42
+#define PLAYERHEIGHT 27
 
 Player::Player()
 {
@@ -17,16 +17,24 @@ Player::Player()
     swing = 0;
 }
 
-Player::Player(bool player){
-    int x1 = ((rand() % 41) + 270);
-    int y1 = ((rand() % 340) - 170);
-    x = x1 - (x1 % 20);
-    y = y1 - (y1 % 20);
+Player::Player(bool enemy){
+
     moving = 0;
     attacking = 0;
     direction = 1;
     step = 0;
     swing = 0;
+    if(enemy){
+        controller = false;
+        int x1 = ((rand() % 41) + 270);
+        int y1 = ((rand() % 340) - 170);
+        x = x1 - (x1 % 20);
+        y = y1 - (y1 % 20);
+    } else {
+        controller = true;
+        x = 0;
+        y = 0;
+    }
 }
 
 
