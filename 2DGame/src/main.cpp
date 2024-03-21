@@ -1,8 +1,8 @@
 #include "main.h"
 #include <iostream>
 #include <bits/stdc++.h>
-
 using namespace std;
+
 //globalvariables
 GLuint playerTex;
 GLuint firstBackTex;
@@ -12,6 +12,7 @@ float scale = 1;
 vector<Player> actors;
 int movementTick = 0;
 int controllerIndex;
+
 //function prototypes
 void defineBounds();
 void loadTexture();
@@ -19,8 +20,6 @@ void grid();
 void attack();
 void enemyActions();
 bool compareZ(Player p1, Player p2);
-
-
 
 //Main, initialize and go to the idle loop
 int main( int argc, char **argv )
@@ -49,12 +48,7 @@ void grid(){
 }
 
 void defineBounds(){
-    Bounds border;
-    border.points = 36;
-    for (int i = 0; i < border.points; i++){
-        border.x[i] = cos(((360/border.points)/57.29f)*i) * 160;
-        border.y[i] = sin(((360/border.points)/57.29f)*i) * 155 + 5;
-    }
+
 }
 
 void game()
@@ -70,10 +64,7 @@ void game()
             controllerIndex = i;
         }
     }
-
-
     enemyActions();
-
     // Draw background
     {
     glScalef(scale, scale, scale);
@@ -262,9 +253,6 @@ void enemyActions(){
                     actors[i].rightMove = 0;
                 }
             }
-
-
-
 
             //This determines if the enemy is close enough to attack and does so if able
             {
