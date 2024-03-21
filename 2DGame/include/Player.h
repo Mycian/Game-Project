@@ -19,6 +19,7 @@ class Player
         int step, swing;
         int direction;
         bool controller;
+        int health;
     protected:
 
     private:

@@ -2,6 +2,7 @@
 #include	<GL/glut.h>
 #include    <SOIL/SOIL.h>
 #include    <math.h>
+#include    <vector>
 #include    "Player.h"
 #include    "Bounds.h"
 
@@ -16,8 +17,9 @@ extern void resetGame();
 extern GLuint playerTex;
 extern GLuint backTex;
 extern GLuint enemyTex;
-extern Player character;
 extern float scale;
+extern std::vector<Player> actors;
+
 
 
 //OpenGL globals and functions

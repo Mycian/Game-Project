@@ -30,10 +30,12 @@ Player::Player(bool enemy){
         int y1 = ((rand() % 340) - 170);
         x = x1 - (x1 % 20);
         y = y1 - (y1 % 20);
+        health = 1;
     } else {
         controller = true;
         x = 0;
         y = 0;
+        health = 3;
     }
 }
 
@@ -73,9 +75,39 @@ void Player::movePlayer(){
         if(direction == 3 && moving)
             X1 += 10;
 
-        x += (X1 - x)/2;
-        y += (Y1 - y)/2;
 
+
+        //checks to see if the actor is blocked by another actor NOT WORKING----------------------------------------------------------------------------------------------------
+        bool canMove = true;
+        for (int i = 0; i < actors.size(); i++){
+            int diffX = actors[i].x - x;
+            int diffY = actors[i].y - y;
+            if(!(diffX == 0) && !(diffY == 0)){
+                std::cout << "a";
+                switch(direction){
+                case 0:
+                    if(diffX <= 5 && diffX >= -5 && diffY <= 20)
+                        canMove = false;
+                    break;
+                case 1:
+                    if(diffX <= 5 && diffX >= -5 && diffY >= -20)
+                        canMove = false;
+                    break;
+                case 2:
+                    if(diffX >= -20 && diffY <= 5 && diffY >= -5)
+                        canMove = false;
+                    break;
+                case 3:
+                    if(diffX <= 20 && diffY <= 5 && diffY >= -5)
+                        canMove = false;
+                    break;
+                }
+            }
+        }
+        if(canMove){
+            x += (X1 - x);
+            y += (Y1 - y);
+        }
 
         //cycles through steps
         if(step == 3)
@@ -89,8 +121,6 @@ void Player::movePlayer(){
         std::cout << x << "," << y << std::endl;
     }
 }
-
-
 
 void Player::attack(){
     /*switch(direction){
@@ -144,8 +174,7 @@ void Player::draw(GLuint* texture){
     glTexCoord2f((SPRITEX * offsetX), (SPRITEY * (offsetY+1))); glVertex2d(-PLAYERWIDTH/2, PLAYERHEIGHT/2);
     glEnd();
     glDisable(GL_TEXTURE_2D);
-    if(character.attacking)
-        std::cout << std::endl << character.swing << " " << character.attacking << "; " ;
+
 }
 
 void Player::animation(){
