@@ -28,7 +28,7 @@ void initWindow( int argc, char **argv )
 }
 void init3D()
 {
-	glClearColor( 0.0,0.0,0.0, 0.0 );
+	glClearColor( 0.0, 0.0, 0.0, 0.0 );
 	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 	glHint( GL_POLYGON_SMOOTH_HINT, GL_NICEST );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );

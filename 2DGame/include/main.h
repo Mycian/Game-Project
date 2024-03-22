@@ -13,14 +13,14 @@ extern void gameKeysUp( unsigned char key);
 extern void attack();
 extern void zoom(bool in);
 extern void resetGame();
+
 //models and actors
 extern GLuint playerTex;
 extern GLuint backTex;
 extern GLuint enemyTex;
 extern float scale;
 extern std::vector<Player> actors;
-
-
+extern int movementTick;
 
 //OpenGL globals and functions
 extern int advance, anim, alias;

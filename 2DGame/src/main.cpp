@@ -8,6 +8,7 @@ GLuint playerTex;
 GLuint firstBackTex;
 GLuint secondBackTex;
 GLuint enemyTex;
+GLuint heartTex;
 float scale = 1;
 vector<Player> actors;
 int movementTick = 0;
@@ -34,17 +35,21 @@ int main( int argc, char **argv )
 
 //displays grid for steps. NOT WORKING----------------------------------------------------------------------------------------------------
 void grid(){
-    glColor3f(0.0, 1.0, 0.0);
-    glBegin(GL_LINES);
-    for(int i = -310; i < 320; i+10){
-         glVertex2d(i, -180);
-         glVertex2d(i, 180);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glLineWidth(1.0f);
+    for(int i = -310; i < 320; i+=10){
+        glBegin(GL_LINE);
+         glVertex2f(i, -180);
+         glVertex2f(i, 180);
+        glEnd();
     }
-    for(int i = -170; i < 180; i+10){
-         glVertex2d(-320, i);
-         glVertex2d(320, i);
+    for(int i = -170; i < 180; i+=10){
+        glBegin(GL_LINE);
+         glVertex2f(-320, i);
+         glVertex2f(320, i);
+        glEnd();
     }
-    glEnd();
+
 }
 
 void defineBounds(){
@@ -54,7 +59,7 @@ void defineBounds(){
 void game()
 {
 	glLoadIdentity();
-
+    actors[controllerIndex].turnPlayer();
 	if(!actors[controllerIndex].attacking )
         actors[controllerIndex].movePlayer();
 
@@ -78,7 +83,6 @@ void game()
      glTexCoord2f(0.0f, 1.0f); glVertex2d(-320, 180);
      glTexCoord2f(1.0f, 1.0f); glVertex2d(320, 180 );
     glEnd();
-    //grid();
     glColor3f( 1.0, 1.0, 1.0 );
     }
 
@@ -91,19 +95,64 @@ void game()
             glPushMatrix();
             glTranslated(actors[i].x, actors[i].y, 0.0);
             actors[i].draw(&enemyTex);
+            if(actors[i].swing == 3){
+                std::cout << "Actor " << i << std::endl;
+                actors[i].attack();
+            }
+            if(actors[i].health == -4){
+                actors.erase(actors.begin()+i);
+                i--;
+            }
         } else {
             glPushMatrix();
             glLoadIdentity();
             glScalef(scale, scale, scale);
             actors[controllerIndex].draw(&playerTex);
-            if(actors[controllerIndex].attacking )
+            if(actors[i].swing == 3){
                 actors[controllerIndex].attack();
+            }
+            if(actors[i].health == -4){
+                actors.erase(actors.begin()+i);
+                controllerIndex = 0;
+                i--;
+            }
         }
         glPopMatrix();
     }
     }
 
-	glColor3f(1.0,1.0,1.0);
+    /*
+     glColor3f(1.0f, 1.0f, 1.0f);
+    glLineWidth(1.0f);
+    for(int i = -310; i < 320; i+=10){
+        glBegin(GL_LINE);
+         glVertex2f(i, -180);
+         glVertex2f(i, 180);
+        glEnd();
+    }
+    for(int i = -170; i < 180; i+=10){
+        glBegin(GL_LINE);
+         glVertex2f(-320, i);
+         glVertex2f(320, i);
+        glEnd();
+    }
+     */
+
+    //Draw health Indicators
+    glLoadIdentity();
+    if(actors[controllerIndex].health > 0){
+        for(int i = 0; i < actors[controllerIndex].health; i++){
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture( GL_TEXTURE_2D, heartTex );
+            glBegin(GL_QUADS);
+             glTexCoord2f(1.0f, 0.0f); glVertex2d(-98 + (i*10), 90);
+             glTexCoord2f(0.0f, 0.0f); glVertex2d(-90 + (i*10), 90);
+             glTexCoord2f(0.0f, 1.0f); glVertex2d(-90 + (i*10), 98);
+             glTexCoord2f(1.0f, 1.0f); glVertex2d(-98 + (i*10), 98 );
+            glEnd();
+        }
+    }
+    glColor3f(1.0,1.0,1.0);
 }
 
 void loadTexture(){
@@ -145,6 +194,17 @@ void loadTexture(){
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_INVERT_Y
     );
+
+    //bind texture
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // Load texture
+    heartTex = SOIL_load_OGL_texture(
+        "sprites/heart.png",
+        SOIL_LOAD_RGBA,//SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_INVERT_Y
+    );
+
     actors.push_back(Player(false));
 }
 
@@ -155,37 +215,41 @@ bool compareZ(Player p1, Player p2){
 //Action keys for this application, called the from keyboard() callback.
 void gameKeys( unsigned char key )
 {
-	switch( key )
-	{
-	case 'W':
-	    actors[controllerIndex].upMove = 1;
-	    actors[controllerIndex].downMove = 0;
-	    actors[controllerIndex].leftMove = 0;
-	    actors[controllerIndex].rightMove = 0;
-	    actors[controllerIndex].moving = 1;
-		break;
-	case 'S':
-	    actors[controllerIndex].upMove = 0;
-	    actors[controllerIndex].downMove = 1;
-	    actors[controllerIndex].leftMove = 0;
-	    actors[controllerIndex].rightMove = 0;
-	    actors[controllerIndex].moving = 1;
-		break;
-	case 'A':
-	    actors[controllerIndex].upMove = 0;
-	    actors[controllerIndex].downMove = 0;
-	    actors[controllerIndex].leftMove = 1;
-	    actors[controllerIndex].rightMove = 0;
-	    actors[controllerIndex].moving = 1;
-		break;
-	case 'D':
-	    actors[controllerIndex].upMove = 0;
-	    actors[controllerIndex].downMove = 0;
-	    actors[controllerIndex].leftMove = 0;
-	    actors[controllerIndex].rightMove = 1;
-	    actors[controllerIndex].moving = 1;
-		break;
-	}
+    if(actors[controllerIndex].controller){
+        switch( key )
+        {
+        case 'W':
+            actors[controllerIndex].upMove = 1;
+            actors[controllerIndex].downMove = 0;
+            actors[controllerIndex].leftMove = 0;
+            actors[controllerIndex].rightMove = 0;
+            actors[controllerIndex].moving = 1;
+            break;
+        case 'S':
+            actors[controllerIndex].upMove = 0;
+            actors[controllerIndex].downMove = 1;
+            actors[controllerIndex].leftMove = 0;
+            actors[controllerIndex].rightMove = 0;
+            actors[controllerIndex].moving = 1;
+            break;
+        case 'A':
+            actors[controllerIndex].upMove = 0;
+            actors[controllerIndex].downMove = 0;
+            actors[controllerIndex].leftMove = 1;
+            actors[controllerIndex].rightMove = 0;
+            actors[controllerIndex].moving = 1;
+            break;
+        case 'D':
+            actors[controllerIndex].upMove = 0;
+            actors[controllerIndex].downMove = 0;
+            actors[controllerIndex].leftMove = 0;
+            actors[controllerIndex].rightMove = 1;
+            actors[controllerIndex].moving = 1;
+            break;
+        case 'K':
+            actors[controllerIndex].health = 0;
+        }
+    }
 }
 
 void gameKeysUp( unsigned char key )
@@ -208,7 +272,8 @@ void gameKeysUp( unsigned char key )
 }
 
 void attack(){
-    actors[controllerIndex].attacking = true;
+    if(actors[controllerIndex].attacking == false && actors[controllerIndex].controller)
+        actors[controllerIndex].attacking = true;
 }
 
 void enemyActions(){
@@ -269,9 +334,8 @@ void enemyActions(){
                     actors[i].attacking = false;
                     actors[i].moving = true;
                 }
-
+                actors[i].turnPlayer();
                 actors[i].movePlayer();
-                std::cout << "Enemy " << i << ": " << actors[i].x << ", " << actors[i].y << std::endl;
             }
             movementTick++;
             movementTick = movementTick % 5;
@@ -292,17 +356,10 @@ void zoom(bool in){
     }
 }
 
+
 //Called from keyboard() callback
 void resetGame()
 {
-    actors[controllerIndex].x = 0;
-    actors[controllerIndex].y = 0;
-    actors[controllerIndex].attacking = 0;
-    actors[controllerIndex].moving = 0;
-    actors[controllerIndex].upMove = 0;
-    actors[controllerIndex].downMove = 0;
-    actors[controllerIndex].leftMove = 0;
-    actors[controllerIndex].rightMove = 0;
-    actors[controllerIndex].step = 0;
-    actors[controllerIndex].direction = 1;
+    actors.erase(actors.begin(),actors.end());
+    actors.push_back(Player(false));
 }

@@ -13,13 +13,14 @@ class Player
         int x, y;
         bool attacking, moving;
         int upMove, downMove, leftMove, rightMove;
+        void turnPlayer();
         void movePlayer();
         void attack();
         void draw(GLuint* texture);
         int step, swing;
         int direction;
         bool controller;
-        int health;
+        int health, death;
     protected:
 
     private:
