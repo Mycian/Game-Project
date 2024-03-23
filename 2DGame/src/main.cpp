@@ -1,5 +1,6 @@
 #include "main.h"
 #include <iostream>
+#include <algorithm>
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -9,15 +10,16 @@ GLuint firstBackTex;
 GLuint secondBackTex;
 GLuint enemyTex;
 GLuint heartTex;
-float scale = 1;
+GLuint dedTex;
+float scale = 0.672;
 vector<Player> actors;
 int movementTick = 0;
 int controllerIndex;
+Bounds wall1;
 
 //function prototypes
 void defineBounds();
 void loadTexture();
-void grid();
 void attack();
 void enemyActions();
 bool compareZ(Player p1, Player p2);
@@ -33,47 +35,47 @@ int main( int argc, char **argv )
 	glutMainLoop();
 }
 
-//displays grid for steps. NOT WORKING----------------------------------------------------------------------------------------------------
-void grid(){
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glLineWidth(1.0f);
-    for(int i = -310; i < 320; i+=10){
-        glBegin(GL_LINE);
-         glVertex2f(i, -180);
-         glVertex2f(i, 180);
-        glEnd();
-    }
-    for(int i = -170; i < 180; i+=10){
-        glBegin(GL_LINE);
-         glVertex2f(-320, i);
-         glVertex2f(320, i);
-        glEnd();
-    }
-
-}
 
 void defineBounds(){
-
+    Bounds wall1 = Bounds();
+    wall1.points = 4;
+    wall1.x = {-240,-240,320,320};
+    wall1.y = {-140,170,170,-140};
 }
 
 void game()
 {
 	glLoadIdentity();
     actors[controllerIndex].turnPlayer();
-	if(!actors[controllerIndex].attacking )
-        actors[controllerIndex].movePlayer();
+    actors[controllerIndex].movePlayer();
 
+    //sorts the actors vector by y coordinate
     sort(actors.begin(), actors.end(), compareZ);
     for(int i = 0; i < actors.size(); i++){
         if(actors[i].controller){
             controllerIndex = i;
         }
     }
+
     enemyActions();
+
     // Draw background
     {
     glScalef(scale, scale, scale);
-	glTranslated(-actors[controllerIndex].x, -actors[controllerIndex].y, 0.0);
+
+    int minX, minY;
+    if(actors[controllerIndex].x > 0){
+        glTranslated(-min(actors[controllerIndex].x, 170), 0.0, 0.0);
+    } else {
+        glTranslated(-max(actors[controllerIndex].x, -170), 0.0, 0.0);
+    }
+    if(actors[controllerIndex].y > 0){
+        glTranslated(0.0, -min(actors[controllerIndex].y, 20), 0.0);
+    } else {
+        glTranslated(0.0, -max(actors[controllerIndex].y, -20), 0.0);
+    }
+
+
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
     glBindTexture( GL_TEXTURE_2D, firstBackTex );
@@ -85,7 +87,6 @@ void game()
     glEnd();
     glColor3f( 1.0, 1.0, 1.0 );
     }
-
 
     // Draw actors
     {
@@ -101,14 +102,29 @@ void game()
             }
             if(actors[i].health == -4){
                 actors.erase(actors.begin()+i);
+                for(int j = 0; j < actors.size(); j++){
+                    if(actors[j].controller){
+                        controllerIndex = j;
+                    }
+                }
                 i--;
             }
         } else {
             glPushMatrix();
             glLoadIdentity();
             glScalef(scale, scale, scale);
+            if(actors[controllerIndex].x < -170 ){
+                glTranslated(actors[controllerIndex].x + 170, 0.0, 0.0);
+            } if(actors[controllerIndex].x > 170){
+                glTranslated(actors[controllerIndex].x - 170, 0.0, 0.0);
+            } if(actors[controllerIndex].y < -20){
+                glTranslated(0.0, actors[controllerIndex].y + 20, 0.0);
+            } if(actors[controllerIndex].y > 20){
+                glTranslated(0.0, actors[controllerIndex].y - 20, 0.0);
+            }
+
             actors[controllerIndex].draw(&playerTex);
-            if(actors[i].swing == 3){
+            if(actors[i].swing == 3 && actors[i].health > 0){
                 actors[controllerIndex].attack();
             }
             if(actors[i].health == -4){
@@ -120,23 +136,6 @@ void game()
         glPopMatrix();
     }
     }
-
-    /*
-     glColor3f(1.0f, 1.0f, 1.0f);
-    glLineWidth(1.0f);
-    for(int i = -310; i < 320; i+=10){
-        glBegin(GL_LINE);
-         glVertex2f(i, -180);
-         glVertex2f(i, 180);
-        glEnd();
-    }
-    for(int i = -170; i < 180; i+=10){
-        glBegin(GL_LINE);
-         glVertex2f(-320, i);
-         glVertex2f(320, i);
-        glEnd();
-    }
-     */
 
     //Draw health Indicators
     glLoadIdentity();
@@ -153,6 +152,16 @@ void game()
         }
     }
     glColor3f(1.0,1.0,1.0);
+    if(!actors[controllerIndex].controller){
+        glBindTexture( GL_TEXTURE_2D, dedTex );
+        glBegin(GL_QUADS);
+         glTexCoord2f(1.0f, 0.0f); glVertex2d(100, -100);
+         glTexCoord2f(0.0f, 0.0f); glVertex2d(-100, -100);
+         glTexCoord2f(0.0f, 1.0f); glVertex2d(-100, 100);
+         glTexCoord2f(1.0f, 1.0f); glVertex2d(100, 100 );
+        glEnd();
+    }
+
 }
 
 void loadTexture(){
@@ -200,6 +209,15 @@ void loadTexture(){
     // Load texture
     heartTex = SOIL_load_OGL_texture(
         "sprites/heart.png",
+        SOIL_LOAD_RGBA,//SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_INVERT_Y
+    );
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // Load texture
+    dedTex = SOIL_load_OGL_texture(
+        "sprites/Loss.png",
         SOIL_LOAD_RGBA,//SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_INVERT_Y
@@ -346,14 +364,14 @@ void enemyActions(){
 
 }
 
-void zoom(bool in){
-    if(!in && (scale > .5)){
+void zoom(bool in){ //Antiqued--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    /*if(!in && (scale > .5)){
         scale *= 0.9;
-        return;
     }
     else if (in && scale < 1.5){
         scale *= 1.1;
     }
+    std::cout << "Zoom = " << scale << std::endl;*/
 }
 
 

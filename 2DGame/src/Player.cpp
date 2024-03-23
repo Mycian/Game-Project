@@ -32,7 +32,7 @@ Player::Player(bool enemy){
     rightMove = false;
     if(enemy){
         controller = false;
-        int x1 = ((rand() % 41) + 270);
+        int x1 = ((rand() % 500) - 250);
         int y1 = ((rand() % 340) - 170);
         x = x1 - (x1 % 20);
         y = y1 - (y1 % 20);
@@ -118,11 +118,14 @@ void Player::movePlayer(){
                 }
             }
         }
-        if(canMove){
+
+        if(canMove && !wall1.checkCollision(x, y)){
+        //if(canMove){
             x += (X1 - x);
             y += (Y1 - y);
         }
-
+        if(controller)
+            std::cout << x << ", " << y << std::endl;
         //cycles through steps
         if(step == 3)
             step = 0;
@@ -137,41 +140,43 @@ void Player::movePlayer(){
 }
 
 void Player::attack(){
-    switch(direction){
-    case 0:
-        glBegin(GL_LINE_LOOP);
-         glVertex2d(-12, 10);
-         glVertex2d(-12, 0);
-         glVertex2d(14, 0);
-         glVertex2d(14, 10);
-        glEnd();
-        break;
-    case 1:
-        glBegin(GL_LINE_LOOP);
-         glVertex2d(-12, 0);
-         glVertex2d(-12, -15);
-         glVertex2d(14, -15);
-         glVertex2d(14, 0);
-        glEnd();
-        break;
-    case 2:
-        glBegin(GL_LINE_LOOP);
-         glVertex2d(0, -15);
-         glVertex2d(0, 15);
-         glVertex2d(-20, 15);
-         glVertex2d(-20, -15);
-        glEnd();
-        break;
-    case 3:
-        glBegin(GL_LINE_LOOP);
-         glVertex2d(0, -15);
-         glVertex2d(0, 15);
-         glVertex2d(20, 15);
-         glVertex2d(20, -15);
-        glEnd();
-        break;
-    }
 
+{//    switch(direction){ Antiqued--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//    case 0:
+//        glBegin(GL_LINE_LOOP);
+//         glVertex2d(-12, 10);
+//         glVertex2d(-12, 0);
+//         glVertex2d(14, 0);
+//         glVertex2d(14, 10);
+//        glEnd();
+//        break;
+//    case 1:
+//        glBegin(GL_LINE_LOOP);
+//         glVertex2d(-12, 0);
+//         glVertex2d(-12, -15);
+//         glVertex2d(14, -15);
+//         glVertex2d(14, 0);
+//        glEnd();
+//        break;
+//    case 2:
+//        glBegin(GL_LINE_LOOP);
+//         glVertex2d(0, -15);
+//         glVertex2d(0, 15);
+//         glVertex2d(-20, 15);
+//         glVertex2d(-20, -15);
+//        glEnd();
+//        break;
+//    case 3:
+//        glBegin(GL_LINE_LOOP);
+//         glVertex2d(0, -15);
+//         glVertex2d(0, 15);
+//         glVertex2d(20, 15);
+//         glVertex2d(20, -15);
+//        glEnd();
+//        break;
+//    }
+}
+    //check hits & deal dmg
     for (int i = 0; i < actors.size(); i++){
         int diffX = actors[i].x - x;
         int diffY = actors[i].y - y;

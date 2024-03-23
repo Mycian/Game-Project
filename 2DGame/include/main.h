@@ -21,6 +21,7 @@ extern GLuint enemyTex;
 extern float scale;
 extern std::vector<Player> actors;
 extern int movementTick;
+extern Bounds wall1;
 
 //OpenGL globals and functions
 extern int advance, anim, alias;
