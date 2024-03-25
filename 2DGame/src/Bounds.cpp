@@ -12,15 +12,15 @@ Bounds::~Bounds()
 }
 
 bool Bounds::checkCollision(int checkX, int checkY){
-    for (int i = 0; i < points-1; i++ ){
+    if(checkX > 310 || checkX < -225 || checkY > 150 || checkY < -110)
+        return 0;
 
 
-//        if(((checkY - y[i])*(x[i+1] - x[i]) - (checkX - x[i])*(y[i+1] - y[i])) < 1)
-//            return 1;
+//    for (int i = 0; i < points-1; i++ ){
+//        if(((checkX - x[i])*(y[i+1] - y[i]) - (checkY - y[i])*(x[i+1] - x[i])) < 0){
+//            std::cout << "outside bounds" << std::endl;
+//            return 0;
+//        }
 //    }
-//    if(((checkY - y[points - 1])*(x[0] - x[points - 1]) - (checkX - x[points - 1])*(y[0] - y[points - 1])) < 1)
-//        return 1;
-//
-//    return 0;
-    }
+    return 1;
 }

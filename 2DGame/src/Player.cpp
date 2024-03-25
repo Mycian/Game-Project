@@ -32,8 +32,8 @@ Player::Player(bool enemy){
     rightMove = false;
     if(enemy){
         controller = false;
-        int x1 = ((rand() % 500) - 250);
-        int y1 = ((rand() % 340) - 170);
+        int x1 = ((rand() % 320 + 220) -220);
+        int y1 = ((rand() % 150 + 110) -110);
         x = x1 - (x1 % 20);
         y = y1 - (y1 % 20);
         health = 1;
@@ -119,7 +119,7 @@ void Player::movePlayer(){
             }
         }
 
-        if(canMove && !wall1.checkCollision(x, y)){
+        if(canMove && wall1.checkCollision(X1, Y1)){
         //if(canMove){
             x += (X1 - x);
             y += (Y1 - y);
@@ -229,8 +229,36 @@ void Player::animation(){
         if(attacking){
             switch(swing){
             case 0:
-                offsetX = 3;
-                ++swing;
+                if((attacking && controller)|| (attacking && movementTick == 0)){
+                    offsetX = 3;
+                    ++swing;
+                }  else {
+                    switch(step){
+                    case 0: case 2:
+                        offsetX = 0;
+                        break;
+                    case 1:
+                        offsetX = 1;
+                        break;
+                    case 3:
+                        offsetX = 2;
+                        break;
+                    }
+                    switch(direction){
+                    case 0:
+                        offsetY = 3;
+                        break;
+                    case 1:
+                        offsetY = 4;
+                        break;
+                    case 2:
+                        offsetY = 2;
+                        break;
+                    case 3:
+                        offsetY = 1;
+                        break;
+                    }
+                }
                 break;
             case 1:
                 offsetX = 4;

@@ -16,6 +16,7 @@ vector<Player> actors;
 int movementTick = 0;
 int controllerIndex;
 Bounds wall1;
+int killCount = 0;
 
 //function prototypes
 void defineBounds();
@@ -54,6 +55,7 @@ void game()
     for(int i = 0; i < actors.size(); i++){
         if(actors[i].controller){
             controllerIndex = i;
+            std::cout << controllerIndex << std::endl;
         }
     }
 
@@ -264,8 +266,6 @@ void gameKeys( unsigned char key )
             actors[controllerIndex].rightMove = 1;
             actors[controllerIndex].moving = 1;
             break;
-        case 'K':
-            actors[controllerIndex].health = 0;
         }
     }
 }
@@ -295,8 +295,10 @@ void attack(){
 }
 
 void enemyActions(){
-    if(actors.size() < 4)
+    if(actors.size() < 4){
+        killCount++;
         actors.push_back(Player(true));
+    }
     for(int i = 0; i < actors.size(); i++){
         if(!actors[i].controller){
             if(actors[i].x < actors[controllerIndex].x){
@@ -380,4 +382,5 @@ void resetGame()
 {
     actors.erase(actors.begin(),actors.end());
     actors.push_back(Player(false));
+    killCount = 0;
 }
